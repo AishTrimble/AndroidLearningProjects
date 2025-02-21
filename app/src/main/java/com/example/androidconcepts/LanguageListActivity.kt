@@ -23,14 +23,14 @@ import java.io.IOException
 import java.io.StringReader
 
 
-class CountryList : AppCompatActivity() {
+class LanguageListActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var adapter: ArrayAdapter<String>
 
-//    private val countryMap =
+    //    private val countryMap =
 //        HashMap<String, String>()
     private val displayList = mutableListOf<String>()
-    private var countryListResponse: CountryListResponse? = null  // Store parsed response
+    private var languageListResponse: LanguageListResponse? = null  // Store parsed response
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +48,14 @@ class CountryList : AppCompatActivity() {
 //            val isoCode =
 //                countryMap.entries.find { it.value == selectedCountry }?.key // Get ISO Code
 //            Log.d("output", selectedCountry)
-            countryListResponse?.let { response ->
+            languageListResponse?.let { response ->
 
-            val selectedCountry = response.countryList[position]
+                val selectedCountry = response.languageList[position]
 
-            val intent = Intent(this, CountryDetailActivity::class.java)
-            intent.putExtra("COUNTRY_NAME", selectedCountry.name)
-            intent.putExtra("ISO_CODE", selectedCountry.isoCode)
-            startActivity(intent)} // Start new activity
+                val intent = Intent(this, CountryDetailActivity::class.java)
+                intent.putExtra("LANGUAGE_NAME", selectedCountry.name)
+                intent.putExtra("LANGUAGE_ISO_CODE", selectedCountry.isoCode)
+                startActivity(intent)} // Start new activity
         }
     }
 
@@ -65,12 +65,12 @@ class CountryList : AppCompatActivity() {
             val client = OkHttpClient()
 
             val soapXml = """<?xml version="1.0" encoding="utf-8"?>
-                <soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-                  <soap12:Body>
-                    <ListOfCountryNamesByName xmlns="http://www.oorsprong.org/websamples.countryinfo">
-                    </ListOfCountryNamesByName>
-                  </soap12:Body>
-                </soap12:Envelope>"""
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+              <soap:Body>
+                <ListOfLanguagesByName xmlns="http://www.oorsprong.org/websamples.countryinfo">
+                </ListOfLanguagesByName>
+              </soap:Body>
+            </soap:Envelope>"""
 
             val mediaType = "text/xml; charset=utf-8".toMediaTypeOrNull()
             val body = RequestBody.create(mediaType, soapXml)
@@ -89,7 +89,7 @@ class CountryList : AppCompatActivity() {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.e("SOAP Error", "Request failed: ${e.message}")
                     runOnUiThread {
-                        Toast.makeText(this@CountryList, "Failed to fetch data", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@LanguageListActivity, "Failed to fetch data", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -98,14 +98,14 @@ class CountryList : AppCompatActivity() {
                     val responseBody = response.body?.string() ?: "Error: Empty Response"
 
                     val parsedData = parseCountryListXml(responseBody)
-                   countryListResponse = parsedData
+                    languageListResponse = parsedData
                     runOnUiThread {
 //                        countryMap.clear()
 //                        countryMap.putAll(parsedData) // Update global HashMap
-                        countryListResponse?.let { response ->
+                        languageListResponse?.let {
 
                             displayList.clear()
-                            displayList.addAll(parsedData.countryList.map { "${it.name} (${it.isoCode})" }) // Format: "Country Name (ISO)"
+                            displayList.addAll(parsedData.languageList.map { "${it.name} (${it.isoCode})" }) // Format: "Country Name (ISO)"
 
                             adapter.notifyDataSetChanged()
                         }// Refresh ListView without creating a new adapter
@@ -118,8 +118,8 @@ class CountryList : AppCompatActivity() {
 
 
 
-    fun parseCountryListXml(xmlResponse: String): CountryListResponse {
-        val countryList = mutableListOf<Country>()
+    fun parseCountryListXml(xmlResponse: String): LanguageListResponse {
+        val countryList = mutableListOf<Language>()
 
         try {
             val factory = XmlPullParserFactory.newInstance()
@@ -142,10 +142,10 @@ class CountryList : AppCompatActivity() {
                             if (parser.next() == XmlPullParser.TEXT) countryName = parser.text
                         }
                     }
-                } else if (eventType == XmlPullParser.END_TAG && parser.name == "m:tCountryCodeAndName") {
+                } else if (eventType == XmlPullParser.END_TAG && parser.name == "m:tLanguage") {
                     if (!isoCode.isNullOrEmpty() && !countryName.isNullOrEmpty()) {
 //                        countryMap[isoCode] = countryName
-                        countryList.add(Country(isoCode, countryName))
+                        countryList.add(Language(isoCode, countryName))
 
                         Log.d("Parsed_Country", "$countryName ($isoCode)") // Log parsed data
                     }
@@ -159,7 +159,7 @@ class CountryList : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("XML Parsing", "Error parsing response: ${e.localizedMessage}")
         }
-        return CountryListResponse(countryList)
+        return LanguageListResponse(countryList)
     }
 
 }

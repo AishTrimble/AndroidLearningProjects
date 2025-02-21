@@ -17,20 +17,27 @@
         android:id="@+id/btnSendRequest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send SOAP Request"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="Send SOAP Request" />
 
     <TextView
         android:id="@+id/tvResponse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Response will appear here"
-        android:paddingTop="10dp"/>
+        android:paddingTop="10dp"
+        android:text="Response will appear here" />
 
     <Button
         android:id="@+id/btnCountrylist"
         android:layout_width="147dp"
         android:layout_height="wrap_content"
         android:text="Countries List" />
+
+    <Button
+        android:id="@+id/btnLanguageList"
+        android:layout_width="148dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="Language List" />
 
 </LinearLayout>

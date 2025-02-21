@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         val btnSendRequest = findViewById<Button>(R.id.btnSendRequest)
         val tvResponse = findViewById<TextView>(R.id.tvResponse)
         val btnCountryList = findViewById<Button>(R.id.btnCountrylist)
+        val btnLanguageList = findViewById<Button>(R.id.btnLanguageList)
 
         btnSendRequest.setOnClickListener {
             val countryCode = etCountryCode.text.toString().trim()
@@ -51,10 +52,18 @@ class MainActivity : AppCompatActivity() {
 
         btnCountryList.setOnClickListener {
 
-                        val intent = Intent(this, CountryList::class.java)
-                        startActivity(intent)
-                    }
-                }
+            val intent = Intent(this, CountryList::class.java)
+            startActivity(intent)
+        }
+
+
+        btnLanguageList.setOnClickListener {
+
+            val intent = Intent(this, LanguageListActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
 
 
 
