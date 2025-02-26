@@ -28,15 +28,7 @@ class CountryDetailActivity : AppCompatActivity(){
 
         val isoCode = intent.getStringExtra("ISO_CODE")
         val languageisoCode = intent.getStringExtra("LANGUAGE_ISO_CODE")
-
-
         val textView: TextView = findViewById(R.id.textView2)
-
-
-
-
-
-
         if(countryName != null && isoCode != null){
             sendSoapRequest(isoCode) { response ->
                 val parsedResponse = parseXmlWithXmlPullParser(response)
