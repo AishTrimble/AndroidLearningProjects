@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -24,13 +24,13 @@ class CountryFlagImgActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.country_capital_activity)
         val isoCode = intent.getStringExtra("ISO_CODE")
-        Log.d("string","capital")
+        Log.d("string", "capital")
         if (isoCode != null) {
-            Log.d("isocodecapital",isoCode)
+            Log.d("isocodecapital", isoCode)
 
             sendSoapRequest(isoCode) { response ->
                 val parsedResponse = parseXmlWithXmlPullParser(response)
-                Log.d("parsedResponse",parsedResponse)
+                Log.d("parsedResponse", parsedResponse)
 
                 val resultIntent = Intent()
                 resultIntent.putExtra("FLAG_RESPONSE", parsedResponse)
@@ -68,9 +68,9 @@ class CountryFlagImgActivity : AppCompatActivity() {
 //                            if (parser.next() == XmlPullParser.TEXT) isoCode = parser.text
 //                        }
 
-                        "m:CountryFlagResult","CountryFlagResult" -> {
+                        "m:CountryFlagResult", "CountryFlagResult" -> {
                             if (parser.next() == XmlPullParser.TEXT) ImageUrl = parser.text
-                            Log.d("Cap","Capital")
+                            Log.d("Cap", "Capital")
 
                         }
                     }

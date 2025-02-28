@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.androidconcepts.Country
+import com.example.androidconcepts.CountryListResponse
+import com.example.androidconcepts.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +30,7 @@ class CountryList : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var adapter: ArrayAdapter<String>
 
-//    private val countryMap =
+    //    private val countryMap =
 //        HashMap<String, String>()
     private val displayList = mutableListOf<String>()
     private var countryListResponse: CountryListResponse? = null  // Store parsed response
@@ -50,11 +53,11 @@ class CountryList : AppCompatActivity() {
 //            Log.d("output", selectedCountry)
             countryListResponse?.let { response ->
 
-            val selectedCountry = response.countryList[position]
-            val intent = Intent(this, CountryDetailActivity::class.java)
+                val selectedCountry = response.countryList[position]
+                val intent = Intent(this, CountryDetailActivity::class.java)
                 intent.putExtra("COUNTRY_NAME", selectedCountry.name)
                 intent.putExtra("ISO_CODE", selectedCountry.isoCode)
-               //intent1.putExtra("ISO_CODE", selectedCountry.isoCode)
+                //intent1.putExtra("ISO_CODE", selectedCountry.isoCode)
                 //startActivity(intent1)
                 startActivity(intent)
             } // Start new activity
@@ -100,7 +103,7 @@ class CountryList : AppCompatActivity() {
                     val responseBody = response.body?.string() ?: "Error: Empty Response"
 
                     val parsedData = parseCountryListXml(responseBody)
-                   countryListResponse = parsedData
+                    countryListResponse = parsedData
                     runOnUiThread {
 //                        countryMap.clear()
 //                        countryMap.putAll(parsedData) // Update global HashMap
@@ -117,7 +120,6 @@ class CountryList : AppCompatActivity() {
             })
         }
     }
-
 
 
     fun parseCountryListXml(xmlResponse: String): CountryListResponse {

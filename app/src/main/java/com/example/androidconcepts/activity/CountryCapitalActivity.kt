@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -24,13 +24,13 @@ class CountryCapitalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.country_capital_activity)
         val isoCode = intent.getStringExtra("ISO_CODE")
-Log.d("string","capital")
+        Log.d("string", "capital")
         if (isoCode != null) {
-            Log.d("isocodecapital",isoCode)
+            Log.d("isocodecapital", isoCode)
 
             sendSoapRequest(isoCode) { response ->
                 val parsedResponse = parseXmlWithXmlPullParser(response)
-                Log.d("parsedResponse",parsedResponse)
+                Log.d("parsedResponse", parsedResponse)
 
                 val resultIntent = Intent()
                 resultIntent.putExtra("CAPITAL_RESPONSE", parsedResponse)
@@ -68,11 +68,11 @@ Log.d("string","capital")
 //                            if (parser.next() == XmlPullParser.TEXT) isoCode = parser.text
 //                        }
 
-                         "m:CapitalCityResult","CapitalCityResult" -> {
+                        "m:CapitalCityResult", "CapitalCityResult" -> {
                             if (parser.next() == XmlPullParser.TEXT) CapitalName = parser.text
-                             Log.d("Cap","Capital")
+                            Log.d("Cap", "Capital")
 
-                         }
+                        }
                     }
                 }
 //

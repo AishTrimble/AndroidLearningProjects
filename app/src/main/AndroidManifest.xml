@@ -27,14 +27,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CountryList"
+        <activity android:name=".activity.CountryList"
              />
-        <activity android:name=".CountryDetailActivity" />
-        <activity android:name=".CountryCapitalActivity" />
-        <activity android:name=".CountryFlagImgActivity" />
+        <activity android:name=".activity.CountryDetailActivity" />
+        <activity android:name=".activity.CountryCapitalActivity" />
+        <activity android:name=".activity.CountryFlagImgActivity" />
 
 
-        <activity android:name=".LanguageListActivity"/>
+        <activity android:name=".activity.LanguageListActivity"/>
 
     </application>
 

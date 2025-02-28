@@ -1,4 +1,4 @@
-import com.example.androidconcepts.CountryInfo
+import com.example.androidconcepts.model.CountryInfo
 
 class CountryRepository(private val dbHelper: DBHelper) {
 

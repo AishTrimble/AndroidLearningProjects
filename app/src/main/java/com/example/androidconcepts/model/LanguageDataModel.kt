@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.model
 
 data class Language(
     val isoCode: String,  // Example: "USD"

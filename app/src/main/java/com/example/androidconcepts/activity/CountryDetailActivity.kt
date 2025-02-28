@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.activity
 
 import CountryRepository
 import DBHelper
@@ -11,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.example.androidconcepts.R
+import com.example.androidconcepts.model.CountryInfo
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +32,7 @@ import java.io.StringReader
 import java.net.URL
 import java.util.concurrent.Executors
 
-class CountryDetailActivity : AppCompatActivity(){
+class CountryDetailActivity : AppCompatActivity() {
     private var response1: String? = null
     private var response2: String? = null
     private var response3: String? = null
@@ -40,7 +42,7 @@ class CountryDetailActivity : AppCompatActivity(){
     private lateinit var dbHelper: DBHelper
     private lateinit var countryRepository: CountryRepository
     private var isoCode: String? = null
-    private var countryName: String?  = null
+    private var countryName: String? = null
     private val activityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -49,18 +51,19 @@ class CountryDetailActivity : AppCompatActivity(){
                 "CountryCapitalActivity" -> {
                     response2 = result.data?.getStringExtra("CAPITAL_RESPONSE")
                     Log.d("Activity2_Response", "Received from Activity 3: $response2")
-                      // Only start Activity 4 after Activity 3 completes
+                    // Only start Activity 4 after Activity 3 completes
                     updateTextView()
                     //checkAndSaveData()
                     startActivity4()
 
 
                 }
+
                 "CountryFlagImgActivity" -> {
                     response3 = result.data?.getStringExtra("FLAG_RESPONSE")
                     Log.d("Activity2_Response", "Received from Activity 4: $response3")
                     updateTextView()
-                    updateImageView()
+                    //updateImageView()
 
                     checkAndSaveData()
                 }
@@ -80,25 +83,25 @@ class CountryDetailActivity : AppCompatActivity(){
 
         dbHelper = DBHelper(this)
         countryRepository = CountryRepository(dbHelper)
-         countryName = intent.getStringExtra("COUNTRY_NAME")
+        countryName = intent.getStringExtra("COUNTRY_NAME")
         val languageName = intent.getStringExtra("LANGUAGE_NAME")
 
-         isoCode = intent.getStringExtra("ISO_CODE")
+        isoCode = intent.getStringExtra("ISO_CODE")
         val languageisoCode = intent.getStringExtra("LANGUAGE_ISO_CODE")
 
         val intent = Intent(this, CountryCapitalActivity::class.java)
         intent.putExtra("ISO_CODE", isoCode)
         activityResultLauncher.launch(intent)
 
-        if(countryName != null && isoCode != null){
+        if (countryName != null && isoCode != null) {
 
-                // Step 1: Start SOAP Request
-                sendSoapRequest(isoCode!!) { response ->
-                    response1 = parseXmlWithXmlPullParser(response)
-                    Log.d("SOAP_RESPONSE", "Response1: $response1")
+            // Step 1: Start SOAP Request
+            sendSoapRequest(isoCode!!) { response ->
+                response1 = parseXmlWithXmlPullParser(response)
+                Log.d("SOAP_RESPONSE", "Response1: $response1")
 
-                    // Step 2: Start Activity 3
-                    startActivity3()
+                // Step 2: Start Activity 3
+                startActivity3()
 
             }
 //            val intent3 = Intent(this, CountryCapitalActivity::class.java)
@@ -123,9 +126,7 @@ class CountryDetailActivity : AppCompatActivity(){
 //            activityResultLauncher.launch(intent3)
 //            activityResultLauncher.launch(intent4)
 
-        }
-
-        else if(languageName != null){
+        } else if (languageName != null) {
             textView.text = "Language: $languageName\nISO Code: $languageisoCode"
         }
 
@@ -164,7 +165,10 @@ class CountryDetailActivity : AppCompatActivity(){
             // Verify the data is saved
             val countryList = countryRepository.getAllCountries()
             for (country in countryList) {
-                Log.d("Database", "Country: ${country.countryName}, Capital: ${country.countryCapital}, FlagUrl : ${country.countryFlagImageUrl}")
+                Log.d(
+                    "Database",
+                    "Country: ${country.countryName}, Capital: ${country.countryCapital}, FlagUrl : ${country.countryFlagImageUrl}"
+                )
             }
         }
     }
@@ -172,7 +176,8 @@ class CountryDetailActivity : AppCompatActivity(){
 
     private fun updateTextView() {
         runOnUiThread {
-            val resultText = "Currency Details:\n$response1\n\nCountry Capital:\n$response2\n\nCountryFlagImgUrl : \n$response3"
+            val resultText =
+                "Currency Details:\n$response1\n\nCountry Capital:\n$response2\n\nCountryFlagImgUrl : \n$response3"
             textView.text = resultText
         }
     }
@@ -184,7 +189,7 @@ class CountryDetailActivity : AppCompatActivity(){
                 executor.execute {
                     val bitmap = downloadImage(url)
                     runOnUiThread {
-                        Log.d("image","flag download")
+                        Log.d("image", "flag download")
                         flagImageView.setImageBitmap(bitmap)
                     }
                 }
@@ -212,7 +217,7 @@ class CountryDetailActivity : AppCompatActivity(){
 //            textView.text = resultText
 //        }
 //    }
-    private fun sendSoapRequest(isoCode: String,onResponse: (String) -> Unit) {
+    private fun sendSoapRequest(isoCode: String, onResponse: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val client = OkHttpClient()
 
@@ -283,7 +288,8 @@ class CountryDetailActivity : AppCompatActivity(){
                         "sName", "m:sName" -> {
                             if (parser.next() == XmlPullParser.TEXT) CurrencyName = parser.text
                         }
-                    }}
+                    }
+                }
 //
                 eventType = parser.next()
             }

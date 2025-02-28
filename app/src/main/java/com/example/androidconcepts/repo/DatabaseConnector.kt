@@ -3,9 +3,10 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.androidconcepts.CountryInfo
+import com.example.androidconcepts.model.CountryInfo
 
-class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DBHelper(context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "CountryDatabase.db"
@@ -41,6 +42,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     // Insert country data
     fun insertCountryInfo(country: CountryInfo): Long {
         val db = writableDatabase
+        if (isCountryExists(country.countryISOCode)) {
+            Log.d(
+                "Database",
+                "Country with ISO Code ${country.countryISOCode} already exists. Skipping insert."
+            )
+            return -1 // Indicating no insertion happened
+        }
         val values = ContentValues().apply {
             put(COLUMN_ISO_CODE, country.countryISOCode)
             put(COLUMN_COUNTRY_NAME, country.countryName)
@@ -51,6 +59,19 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         Log.d("Insert", "success")
         return db.insert(TABLE_NAME, null, values)
     }
+
+
+    fun isCountryExists(isoCode: String): Boolean {
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ISO_CODE = ?"
+        val cursor = db.rawQuery(query, arrayOf(isoCode))
+
+        val exists = cursor.count > 0
+        cursor.close()
+
+        return exists
+    }
+
 
     // Fetch all countries
     fun getAllCountries(): List<CountryInfo> {
@@ -63,7 +84,11 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
                 countryISOCode = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ISO_CODE)),
                 countryName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COUNTRY_NAME)),
-                countryCapital = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CAPITAL_RESPONSE)),
+                countryCapital = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        COLUMN_CAPITAL_RESPONSE
+                    )
+                ),
                 countryCurrency = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CURRENCY)),
                 countryFlagImageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FLAG_URL))
             )

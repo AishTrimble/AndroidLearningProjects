@@ -7,7 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.io.StringReader
+import com.example.androidconcepts.activity.CountryList
+import com.example.androidconcepts.activity.LanguageListActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ import okhttp3.Response
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.IOException
+import java.io.StringReader
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,52 +67,52 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-        fun parseXmlWithXmlPullParser(xmlResponse: String): String {
-            try {
-                val factory = XmlPullParserFactory.newInstance()
-                val parser = factory.newPullParser()
-                parser.setFeature(
-                    XmlPullParser.FEATURE_PROCESS_NAMESPACES,
-                    true
-                ) // Enable namespaces
-                parser.setInput(StringReader(xmlResponse)) // Correct input source
+    fun parseXmlWithXmlPullParser(xmlResponse: String): String {
+        try {
+            val factory = XmlPullParserFactory.newInstance()
+            val parser = factory.newPullParser()
+            parser.setFeature(
+                XmlPullParser.FEATURE_PROCESS_NAMESPACES,
+                true
+            ) // Enable namespaces
+            parser.setInput(StringReader(xmlResponse)) // Correct input source
 
-                var eventType = parser.eventType
-                var isoCode: String? = null
-                var CurrencyName: String? = null
+            var eventType = parser.eventType
+            var isoCode: String? = null
+            var CurrencyName: String? = null
 
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_TAG) {
-                        when (parser.name) {
-                            "sISOCode", "m:sISOCode" -> {
-                                if (parser.next() == XmlPullParser.TEXT) isoCode = parser.text
-                            }
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    when (parser.name) {
+                        "sISOCode", "m:sISOCode" -> {
+                            if (parser.next() == XmlPullParser.TEXT) isoCode = parser.text
+                        }
 
-                            "sName", "m:sName" -> {
-                                if (parser.next() == XmlPullParser.TEXT) CurrencyName = parser.text
-                            }
-                        }}
+                        "sName", "m:sName" -> {
+                            if (parser.next() == XmlPullParser.TEXT) CurrencyName = parser.text
+                        }
+                    }
+                }
 //
-                    eventType = parser.next()
-                }
-
-                return if (!isoCode.isNullOrEmpty() && !CurrencyName.isNullOrEmpty()) {
-                    "ISO Code: $isoCode\nCurrency Name: $CurrencyName"
-                } else {
-                    "Error: Could not extract currency details"
-                }
-            } catch (e: Exception) {
-
-                return "Error parsing response: ${e.localizedMessage}"
+                eventType = parser.next()
             }
 
+            return if (!isoCode.isNullOrEmpty() && !CurrencyName.isNullOrEmpty()) {
+                "ISO Code: $isoCode\nCurrency Name: $CurrencyName"
+            } else {
+                "Error: Could not extract currency details"
+            }
+        } catch (e: Exception) {
+
+            return "Error parsing response: ${e.localizedMessage}"
         }
 
+    }
 
 
-        private fun sendSoapRequest(countryCode: String,onResponse: (String) -> Unit) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val client = OkHttpClient()
+    private fun sendSoapRequest(countryCode: String, onResponse: (String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = OkHttpClient()
 
             val soapXml = """
                 <?xml version="1.0" encoding="utf-8"?>
@@ -124,32 +126,32 @@ class MainActivity : AppCompatActivity() {
             """.trimIndent()
 
 
-                val mediaType = "text/xml; charset=utf-8".toMediaTypeOrNull()
-                val body = RequestBody.create(mediaType, soapXml)
+            val mediaType = "text/xml; charset=utf-8".toMediaTypeOrNull()
+            val body = RequestBody.create(mediaType, soapXml)
 
-                val request = Request.Builder()
-                    .url("http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso") // Replace with actual API URL
-                    .post(body)
-                    .addHeader("Content-Type", "text/xml")
+            val request = Request.Builder()
+                .url("http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso") // Replace with actual API URL
+                .post(body)
+                .addHeader("Content-Type", "text/xml")
 //                    .addHeader(
 //                        "SOAPAction",
 //                        "http://www.oorsprong.org/websamples.countryinfo/CountryCurrency"
 //                    )
-                    .build()
+                .build()
 
 
 
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        onResponse("Error: ${e.message}")
-                    }
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    onResponse("Error: ${e.message}")
+                }
 
-                    override fun onResponse(call: Call, response: Response) {
-                        val responseBody = response.body?.string() ?: "Error: Empty Response"
-                        Log.d("SOAP_RESPONSE", responseBody)
-                        onResponse(responseBody)
-                    }
-                })
-            }
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string() ?: "Error: Empty Response"
+                    Log.d("SOAP_RESPONSE", responseBody)
+                    onResponse(responseBody)
+                }
+            })
         }
     }
+}

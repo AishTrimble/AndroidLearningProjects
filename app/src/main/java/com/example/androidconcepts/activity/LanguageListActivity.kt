@@ -1,4 +1,4 @@
-package com.example.androidconcepts
+package com.example.androidconcepts.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.androidconcepts.R
+import com.example.androidconcepts.model.Language
+import com.example.androidconcepts.model.LanguageListResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +58,8 @@ class LanguageListActivity : AppCompatActivity() {
                 val intent = Intent(this, CountryDetailActivity::class.java)
                 intent.putExtra("LANGUAGE_NAME", selectedCountry.name)
                 intent.putExtra("LANGUAGE_ISO_CODE", selectedCountry.isoCode)
-                startActivity(intent)} // Start new activity
+                startActivity(intent)
+            } // Start new activity
         }
     }
 
@@ -89,7 +93,11 @@ class LanguageListActivity : AppCompatActivity() {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.e("SOAP Error", "Request failed: ${e.message}")
                     runOnUiThread {
-                        Toast.makeText(this@LanguageListActivity, "Failed to fetch data", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            this@LanguageListActivity,
+                            "Failed to fetch data",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }
@@ -115,7 +123,6 @@ class LanguageListActivity : AppCompatActivity() {
             })
         }
     }
-
 
 
     fun parseCountryListXml(xmlResponse: String): LanguageListResponse {
