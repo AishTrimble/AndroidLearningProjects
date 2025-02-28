@@ -2,7 +2,7 @@ package com.example.androidconcepts
 
 data class Country(
     val isoCode: String,  // Example: "USD"
-    val name: String      // Example: "US Dollar"
+    val name: String,
 )
 
 data class CountryListResponse(

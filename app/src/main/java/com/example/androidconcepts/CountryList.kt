@@ -51,11 +51,13 @@ class CountryList : AppCompatActivity() {
             countryListResponse?.let { response ->
 
             val selectedCountry = response.countryList[position]
-
             val intent = Intent(this, CountryDetailActivity::class.java)
-            intent.putExtra("COUNTRY_NAME", selectedCountry.name)
-            intent.putExtra("ISO_CODE", selectedCountry.isoCode)
-            startActivity(intent)} // Start new activity
+                intent.putExtra("COUNTRY_NAME", selectedCountry.name)
+                intent.putExtra("ISO_CODE", selectedCountry.isoCode)
+               //intent1.putExtra("ISO_CODE", selectedCountry.isoCode)
+                //startActivity(intent1)
+                startActivity(intent)
+            } // Start new activity
         }
     }
 
@@ -147,7 +149,7 @@ class CountryList : AppCompatActivity() {
 //                        countryMap[isoCode] = countryName
                         countryList.add(Country(isoCode, countryName))
 
-                        Log.d("Parsed_Country", "$countryName ($isoCode)") // Log parsed data
+                        //Log.d("Parsed_Country", "$countryName ($isoCode)") // Log parsed data
                     }
                     isoCode = null
                     countryName = null

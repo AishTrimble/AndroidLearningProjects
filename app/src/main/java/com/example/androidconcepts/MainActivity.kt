@@ -65,10 +65,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
         fun parseXmlWithXmlPullParser(xmlResponse: String): String {
             try {
                 val factory = XmlPullParserFactory.newInstance()
