@@ -9,4 +9,9 @@ class CountryRepository(private val dbHelper: DBHelper) {
     fun getAllCountries(): List<CountryInfo> {
         return dbHelper.getAllCountries()
     }
+
+    fun searchCountries(isocode: String): CountryInfo? {
+        val exist = dbHelper.searchCountryInfo(isocode)
+        return exist
+    }
 }

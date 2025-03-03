@@ -63,13 +63,43 @@ class DBHelper(context: Context) :
 
     fun isCountryExists(isoCode: String): Boolean {
         val db = readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ISO_CODE = ?"
+        val query =
+            "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ISO_CODE = ? OR $COLUMN_COUNTRY_NAME = ?"
+
         val cursor = db.rawQuery(query, arrayOf(isoCode))
 
         val exists = cursor.count > 0
         cursor.close()
 
         return exists
+    }
+
+    fun searchCountryInfo(searchQuery: String): CountryInfo? {
+        val db = readableDatabase
+        val query =
+            "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ISO_CODE = ? OR $COLUMN_COUNTRY_NAME = ?"
+        val cursor = db.rawQuery(query, arrayOf(searchQuery, searchQuery))
+
+        var countryInfo: CountryInfo? = null
+
+        if (cursor.moveToFirst()) {
+            countryInfo = CountryInfo(
+                countryISOCode = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ISO_CODE)),
+                countryName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COUNTRY_NAME)),
+                countryCapital = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        COLUMN_CAPITAL_RESPONSE
+                    )
+                ),
+                countryCurrency = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CURRENCY)),
+                countryFlagImageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FLAG_URL))
+
+            )
+
+        }
+
+        cursor.close()
+        return countryInfo
     }
 
 
@@ -97,4 +127,20 @@ class DBHelper(context: Context) :
         cursor.close()
         return countryList
     }
+
+
+    fun truncateTable() {
+        val db = writableDatabase
+        try {
+            db.execSQL("DELETE FROM $TABLE_NAME")  // Clears all records
+            db.execSQL("VACUUM") // Optional: Reclaims database space
+            Log.d("Database", "Table $TABLE_NAME truncated successfully.")
+        } catch (e: Exception) {
+            Log.e("Database", "Error truncating table: ${e.localizedMessage}")
+        } finally {
+            db.close()
+        }
+    }
+
+
 }

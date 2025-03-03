@@ -46,11 +46,6 @@ class LanguageListActivity : AppCompatActivity() {
         sendSoapRequest()
 
         listView.setOnItemClickListener { _, _, position, _ ->
-
-//            val selectedCountry = displayList[position] // Get clicked country
-//            val isoCode =
-//                countryMap.entries.find { it.value == selectedCountry }?.key // Get ISO Code
-//            Log.d("output", selectedCountry)
             languageListResponse?.let { response ->
 
                 val selectedCountry = response.languageList[position]
@@ -113,10 +108,10 @@ class LanguageListActivity : AppCompatActivity() {
                         languageListResponse?.let {
 
                             displayList.clear()
-                            displayList.addAll(parsedData.languageList.map { "${it.name} (${it.isoCode})" }) // Format: "Country Name (ISO)"
+                            displayList.addAll(parsedData.languageList.map { "${it.name} (${it.isoCode})" })
 
                             adapter.notifyDataSetChanged()
-                        }// Refresh ListView without creating a new adapter
+                        }
                     }
                 }
 

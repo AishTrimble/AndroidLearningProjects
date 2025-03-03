@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidConcepts</string>
+    <string name="custom_search_button">Find</string>
+
 </resources>

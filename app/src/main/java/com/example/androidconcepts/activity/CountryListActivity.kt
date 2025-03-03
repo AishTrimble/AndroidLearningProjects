@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.SearchView
 import com.example.androidconcepts.Country
 import com.example.androidconcepts.CountryListResponse
 import com.example.androidconcepts.R
@@ -29,42 +30,44 @@ import java.io.StringReader
 class CountryList : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var adapter: ArrayAdapter<String>
-
-    //    private val countryMap =
-//        HashMap<String, String>()
     private val displayList = mutableListOf<String>()
-    private var countryListResponse: CountryListResponse? = null  // Store parsed response
+    private var countryListResponse: CountryListResponse? = null
+    private lateinit var searchview: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.countrylist)
 
+        searchview = findViewById(R.id.searchview)
+        searchview.setIconifiedByDefault(false)
         listView = findViewById(R.id.listview)
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayList)
         listView.adapter = adapter
-
         sendSoapRequest()
 
+        searchview.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false  // We handle filtering dynamically
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return true
+            }
+        })
         listView.setOnItemClickListener { _, _, position, _ ->
-
-//            val selectedCountry = displayList[position] // Get clicked country
-//            val isoCode =
-//                countryMap.entries.find { it.value == selectedCountry }?.key // Get ISO Code
-//            Log.d("output", selectedCountry)
             countryListResponse?.let { response ->
-
                 val selectedCountry = response.countryList[position]
                 val intent = Intent(this, CountryDetailActivity::class.java)
                 intent.putExtra("COUNTRY_NAME", selectedCountry.name)
                 intent.putExtra("ISO_CODE", selectedCountry.isoCode)
-                //intent1.putExtra("ISO_CODE", selectedCountry.isoCode)
-                //startActivity(intent1)
                 startActivity(intent)
-            } // Start new activity
+            }
         }
+
+
     }
 
-    //
     private fun sendSoapRequest() {
         CoroutineScope(Dispatchers.IO).launch {
             val client = OkHttpClient()
@@ -82,13 +85,10 @@ class CountryList : AppCompatActivity() {
 
             val request = Request.Builder()
                 .url("http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso")
-                .post(body)
-                .addHeader("Content-Type", "text/xml")
-                .addHeader(
+                .post(body).addHeader("Content-Type", "text/xml").addHeader(
                     "SOAPAction",
                     "http://www.oorsprong.org/websamples.countryinfo/ListOfCountryNamesByName"
-                )
-                .build()
+                ).build()
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -105,8 +105,6 @@ class CountryList : AppCompatActivity() {
                     val parsedData = parseCountryListXml(responseBody)
                     countryListResponse = parsedData
                     runOnUiThread {
-//                        countryMap.clear()
-//                        countryMap.putAll(parsedData) // Update global HashMap
                         countryListResponse?.let { response ->
 
                             displayList.clear()
@@ -148,10 +146,7 @@ class CountryList : AppCompatActivity() {
                     }
                 } else if (eventType == XmlPullParser.END_TAG && parser.name == "m:tCountryCodeAndName") {
                     if (!isoCode.isNullOrEmpty() && !countryName.isNullOrEmpty()) {
-//                        countryMap[isoCode] = countryName
                         countryList.add(Country(isoCode, countryName))
-
-                        //Log.d("Parsed_Country", "$countryName ($isoCode)") // Log parsed data
                     }
                     isoCode = null
                     countryName = null

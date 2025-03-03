@@ -1,6 +1,7 @@
 package com.example.androidconcepts.model
 
 data class CountryInfo(
+
     val id: Int? = null,
     val countryISOCode: String,
     val countryName: String?,
